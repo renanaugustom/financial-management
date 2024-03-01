@@ -10,6 +10,7 @@ export const defaultOptions = {
   logging: false,
   synchronize: false,
   migrationsRun: false,
+  ssl: process.env.DB_SSL === 'true',
   entities: ['dist/**/*.entity.js'],
   migrations: process.env.TYPEORM
     ? ['src/infra/migrations/*.ts']
