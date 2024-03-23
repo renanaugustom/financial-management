@@ -21,7 +21,7 @@ export class FinancialAccountService {
         financialAccount,
       );
 
-      return this.accountRepository.save(financialAccountEntity);
+      return await this.accountRepository.save(financialAccountEntity);
     } catch (error) {}
   }
 }

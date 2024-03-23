@@ -11,6 +11,7 @@ import { FinancialAccountModule } from 'financialAccount/financial-account.modul
 import { HttpExceptionFilter } from 'expceptions/exception.filter';
 import { TransactionModule } from 'transaction/transaction.module';
 import { CategoryModule } from 'category/category.module';
+import { CreditCardModule } from 'creditCard/credit-card.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CategoryModule } from 'category/category.module';
     FinancialAccountModule,
     TransactionModule,
     CategoryModule,
+    CreditCardModule,
   ],
   controllers: [AppController],
   providers: [

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { FinancialAccount } from 'financialAccount/financial-account.entity';
 import { Category } from 'category/category.entity';
+import { CreditCard } from 'creditCard/credit-card.entity';
 
 @Entity()
 export class Transaction {
@@ -27,12 +28,19 @@ export class Transaction {
   @Column({ name: 'financial_account_id' })
   financialAccountId: string;
 
+  @Column({name: 'credit_card_id', nullable: true})
+  creditCardId?: string;
+
   @Column({ name: 'category_id' })
   categoryId: string;
 
   @ManyToOne(() => FinancialAccount, (account) => account.transactions)
   @JoinColumn({ name: 'financial_account_id', referencedColumnName: 'id' })
-  account: FinancialAccount;
+  financialAccount: FinancialAccount;
+
+  @ManyToOne(() => CreditCard, (creditCard) => creditCard.transactions)
+  @JoinColumn({ name: 'credit_card_id', referencedColumnName: 'id' })
+  creditCard: CreditCard;
 
   @ManyToOne(() => Category, (category) => category.transactions)
   @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from 'user/user.entity';
 import { Transaction } from 'transaction/transaction.entity';
+import { CreditCard } from 'creditCard/credit-card.entity';
 
 @Entity('financial_account')
 export class FinancialAccount {
@@ -38,6 +39,9 @@ export class FinancialAccount {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
 
-  @OneToMany(() => Transaction, (transaction) => transaction.account)
+  @OneToMany(() => Transaction, (transaction) => transaction.financialAccount)
   transactions: Transaction[];
+
+  @OneToMany(() => CreditCard, (creditCard) => creditCard.financialAccount)
+  creditCards: CreditCard[];
 }

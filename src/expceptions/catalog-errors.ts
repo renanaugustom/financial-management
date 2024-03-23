@@ -14,4 +14,9 @@ export const CATALOG_ERRORS = {
       `The ${entity} already exists`,
     );
   },
+  CREDIT_CARD_DOESNT_BELONG_TO_ACCOUNT: new APIError(
+    HttpStatus.CONFLICT,
+    '0003',
+    'Credit card doesn`t belong to user',
+  ),
 };

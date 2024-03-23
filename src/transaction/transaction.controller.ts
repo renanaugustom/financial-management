@@ -34,11 +34,11 @@ export class TransactionController {
   })
   async filterByUser(
     @Param('userId') userId: string,
-    @Query('type') type: string,
-    @Query('startDate') startDate: Date,
-    @Query('endDate') endDate: Date,
-    @Query('financialAccountId') financialAccountId: string,
-    @Query('categoryId') categoryId: string,
+    @Query('type') type?: string,
+    @Query('startDate') startDate?: Date,
+    @Query('endDate') endDate?: Date,
+    @Query('financialAccountId') financialAccountId?: string,
+    @Query('categoryId') categoryId?: string,
   ): Promise<Array<TransactionListDTO>> {
     const filter = new TransactionFilterDTO(
       startDate,
@@ -49,5 +49,23 @@ export class TransactionController {
     );
 
     return await this.transactionService.listByUserId(userId, filter);
+  }
+
+  @Get(':userId/credit-card/:creditCardId')
+  @ApiOperation({
+    summary: 'List transactions by user ID and credit card ID',
+    tags: ['Transaction'],
+  })
+  @ApiOkResponse({
+    description: 'Filter transactions by user ID and credit card ID',
+  })
+  async filterByCreditCard(
+    @Param('userId') userId: string,
+    @Param('creditCardId') creditCardId: string,
+  ): Promise<Array<TransactionListDTO>> {
+    return await this.transactionService.listByUserAndCreditCard(
+      userId,
+      creditCardId,
+    );
   }
 }

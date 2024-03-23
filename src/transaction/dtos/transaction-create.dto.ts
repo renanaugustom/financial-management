@@ -4,4 +4,5 @@ export class TransactionCreateDTO {
   date: Date;
   financialAccountId: string;
   categoryId: string;
+  creditCardId?: string;
 }
