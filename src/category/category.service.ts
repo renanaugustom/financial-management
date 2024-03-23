@@ -5,6 +5,7 @@ import { plainToInstance } from 'class-transformer';
 
 import { Category } from './category.entity';
 import { CategoryListDTO } from './dtos/category-list.dto';
+import { CATALOG_ERRORS } from 'expceptions/catalog-errors';
 
 @Injectable()
 export class CategoryService {
@@ -24,6 +25,7 @@ export class CategoryService {
       });
     } catch (error) {
       console.log(error);
+      throw CATALOG_ERRORS.SERVER_ERROR;
     }
   }
 }

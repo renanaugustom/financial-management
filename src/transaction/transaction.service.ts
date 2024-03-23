@@ -36,7 +36,7 @@ export class TransactionService {
       return await this.transactionRepository.save(transactionEntity);
     } catch (error) {
       console.log(error);
-      throw error;
+      throw CATALOG_ERRORS.SERVER_ERROR;
     }
   }
 
@@ -68,7 +68,7 @@ export class TransactionService {
       });
     } catch (error) {
       console.log(error);
-      throw error;
+      throw CATALOG_ERRORS.SERVER_ERROR;
     }
   }
 
@@ -96,7 +96,7 @@ export class TransactionService {
       });
     } catch (error) {
       console.log(error);
-      throw error;
+      throw CATALOG_ERRORS.SERVER_ERROR;
     }
   }
 

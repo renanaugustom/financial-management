@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { CreditCard } from 'creditCard/credit-card.entity';
 import { CreditCardCreateDTO } from 'creditCard/dtos/credit-card-create.dto';
+import { CATALOG_ERRORS } from 'expceptions/catalog-errors';
 
 @Injectable()
 export class CreditCardService {
@@ -30,7 +31,7 @@ export class CreditCardService {
       });
     } catch (error) {
       console.log(error);
-      throw error;
+      throw CATALOG_ERRORS.SERVER_ERROR;
     }
   }
 }
