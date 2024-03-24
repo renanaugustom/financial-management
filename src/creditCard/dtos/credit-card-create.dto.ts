@@ -1,11 +1,31 @@
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+
 export class CreditCardCreateDTO {
-    description: string;
-    brand: string;
-    limit: number;
-    financialAccountId: string;
-    invoiceDay: number;
-    paymentDay: number;
-    balance: number;
-    userId: string;
-  }
-  
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  brand: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  limit: number;
+
+  @IsNotEmpty()
+  @IsString()
+  financialAccountId: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  invoiceDay: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  paymentDay: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  balance: number;
+}
