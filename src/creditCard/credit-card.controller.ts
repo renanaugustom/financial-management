@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 
-import { CreditCardService } from 'creditCard/credit-card.service';
-import { CreditCardCreateDTO } from 'creditCard/dtos/credit-card-create.dto';
+import { CreditCardService } from '@src/creditCard/credit-card.service';
+import { CreditCardCreateDTO } from '@src/creditCard/dtos/credit-card-create.dto';
 
 @Controller('credit-card')
 export class CreditCardController {
@@ -14,9 +14,7 @@ export class CreditCardController {
     tags: ['Credit Card'],
   })
   @ApiCreatedResponse()
-  async create(
-    @Body() newCreditCard: CreditCardCreateDTO,
-  ): Promise<void> {
+  async create(@Body() newCreditCard: CreditCardCreateDTO): Promise<void> {
     await this.creditCardService.createCreditCard(newCreditCard);
   }
 }

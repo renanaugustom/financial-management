@@ -4,9 +4,9 @@ import { QueryFailedError, Repository } from 'typeorm';
 
 import { plainToInstance } from 'class-transformer';
 
-import { CATALOG_ERRORS } from 'expceptions/catalog-errors';
-import { UserCreateDTO } from 'user/dtos/user-create.dto';
-import { User } from 'user/user.entity';
+import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { UserCreateDTO } from '@src/user/dtos/user-create.dto';
+import { User } from '@src/user/user.entity';
 
 @Injectable()
 export class UserService {

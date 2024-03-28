@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { CategoryService } from './category.service';
-import { CategoryListDTO } from './dtos/category-list.dto';
+import { CategoryService } from '@src/category/category.service';
+import { CategoryListDTO } from '@src/category/dtos/category-list.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -15,7 +15,7 @@ export class CategoryController {
   @ApiOkResponse({
     description: 'List all categories',
   })
-  async filterByUser(): Promise<Array<CategoryListDTO>> {
+  async listAll(): Promise<Array<CategoryListDTO>> {
     return await this.categoryService.listAll();
   }
 }

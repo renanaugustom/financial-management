@@ -5,10 +5,10 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 
-import { TransactionService } from 'transaction/transaction.service';
-import { TransactionCreateDTO } from 'transaction/dtos/transaction-create.dto';
-import { TransactionListDTO } from 'transaction/dtos/transaction-list.dto';
-import { TransactionFilterDTO } from 'transaction/dtos/transaction-filter.dto';
+import { TransactionService } from '@src/transaction/transaction.service';
+import { TransactionCreateDTO } from '@src/transaction/dtos/transaction-create.dto';
+import { TransactionListDTO } from '@src/transaction/dtos/transaction-list.dto';
+import { TransactionFilterDTO } from '@src/transaction/dtos/transaction-filter.dto';
 
 @Controller('transaction')
 export class TransactionController {

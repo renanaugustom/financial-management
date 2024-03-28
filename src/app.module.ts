@@ -5,13 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { defaultOptions } from '../ormconfig';
 import { AppController } from './app.controller';
 
-import { UserModule } from 'user/user.module';
-import { FinancialAccountModule } from 'financialAccount/financial-account.module';
-
-import { HttpExceptionFilter } from 'expceptions/exception.filter';
-import { TransactionModule } from 'transaction/transaction.module';
-import { CategoryModule } from 'category/category.module';
-import { CreditCardModule } from 'creditCard/credit-card.module';
+import { UserModule } from '@src/user/user.module';
+import { FinancialAccountModule } from '@src/financialAccount/financial-account.module';
+import { HttpExceptionFilter } from '@src/exceptions/exception.filter';
+import { TransactionModule } from '@src/transaction/transaction.module';
+import { CategoryModule } from '@src/category/category.module';
+import { CreditCardModule } from '@src/creditCard/credit-card.module';
 
 @Module({
   imports: [

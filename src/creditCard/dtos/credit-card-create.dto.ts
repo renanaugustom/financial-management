@@ -24,8 +24,4 @@ export class CreditCardCreateDTO {
   @IsNotEmpty()
   @IsNumber()
   paymentDay: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  balance: number;
 }

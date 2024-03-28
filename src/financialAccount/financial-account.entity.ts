@@ -8,9 +8,9 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { User } from 'user/user.entity';
-import { Transaction } from 'transaction/transaction.entity';
-import { CreditCard } from 'creditCard/credit-card.entity';
+import { User } from '@src/user/user.entity';
+import { Transaction } from '@src/transaction/transaction.entity';
+import { CreditCard } from '@src/creditCard/credit-card.entity';
 
 @Entity('financial_account')
 export class FinancialAccount {

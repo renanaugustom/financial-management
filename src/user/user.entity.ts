@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { FinancialAccount } from 'financialAccount/financial-account.entity';
+import { FinancialAccount } from '@src/financialAccount/financial-account.entity';
 
 @Entity('user')
 export class User {
