@@ -2,7 +2,7 @@ import { Expose, Transform } from 'class-transformer';
 
 export class TransactionListDTO {
   @Expose()
-  value: string;
+  value: number;
 
   @Expose()
   date: Date;

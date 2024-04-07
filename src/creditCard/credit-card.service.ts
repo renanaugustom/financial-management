@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
-import { CreditCard } from 'creditCard/credit-card.entity';
-import { CreditCardCreateDTO } from 'creditCard/dtos/credit-card-create.dto';
-import { CATALOG_ERRORS } from 'expceptions/catalog-errors';
+
+import { CreditCard } from '@src/creditCard/credit-card.entity';
+import { CreditCardCreateDTO } from '@src/creditCard/dtos/credit-card-create.dto';
+import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { CreditCardGetDto } from '@src/creditCard/dtos/credit-card-get.dto';
 
 @Injectable()
 export class CreditCardService {
@@ -13,25 +15,25 @@ export class CreditCardService {
     private creditCardRepository: Repository<CreditCard>,
   ) {}
 
-  async createCreditCard(creditCard: CreditCardCreateDTO): Promise<CreditCard> {
-    try {
-      const creditCardEntity = plainToInstance(CreditCard, creditCard);
+  async createCreditCard(
+    creditCard: CreditCardCreateDTO,
+  ): Promise<CreditCardCreateDTO> {
+    const creditCardEntity = plainToInstance(CreditCard, creditCard);
 
-      return await this.creditCardRepository.save(creditCardEntity);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    await this.creditCardRepository.save(creditCardEntity);
+
+    return creditCard;
   }
 
-  async getById(creditCardId: string): Promise<CreditCard> {
-    try {
-      return await this.creditCardRepository.findOneBy({
-        id: creditCardId,
-      });
-    } catch (error) {
-      console.log(error);
-      throw CATALOG_ERRORS.SERVER_ERROR;
+  async getById(creditCardId: string): Promise<CreditCardGetDto> {
+    const creditCardEntity = await this.creditCardRepository.findOneBy({
+      id: creditCardId,
+    });
+
+    if (!creditCardEntity) {
+      throw CATALOG_ERRORS.CREDIT_CARD_NOT_FOUND;
     }
+
+    return plainToInstance(CreditCardGetDto, creditCardEntity);
   }
 }

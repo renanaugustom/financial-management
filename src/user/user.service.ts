@@ -15,18 +15,19 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async createUser(user: UserCreateDTO): Promise<User> {
+  async createUser(user: UserCreateDTO) {
     try {
       const userEntity = plainToInstance(User, user);
-      return await this.userRepository.save(userEntity);
+      await this.userRepository.save(userEntity);
     } catch (error) {
       if (error instanceof QueryFailedError) {
+        console.log(error);
         if (error.driverError.code === '23505') {
           throw CATALOG_ERRORS.DB_DUPLICATED_ERROR('user');
         }
       }
 
-      throw CATALOG_ERRORS.SERVER_ERROR;
+      throw error;
     }
   }
 }

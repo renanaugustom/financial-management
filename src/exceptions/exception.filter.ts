@@ -8,6 +8,8 @@ import {
 } from '@nestjs/common';
 
 import { Response } from 'express';
+import { CATALOG_ERRORS } from './catalog-errors';
+import { APIError } from './api-error';
 
 @Catch(HttpException)
 @Injectable({ scope: Scope.REQUEST })
@@ -16,12 +18,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const status =
-      exception instanceof HttpException ? exception.getStatus() : 500;
+    const customError =
+      exception instanceof APIError ? exception : CATALOG_ERRORS.SERVER_ERROR;
 
-    response.status(status).json({
-      errorCode: exception.errorCode,
-      message: exception.message,
+    // TODO: Log the error
+
+    response.status(customError.getStatus()).json({
+      errorCode: customError.errorCode,
+      message: customError.message,
     });
   }
 }
