@@ -40,7 +40,7 @@ describe('HttpExceptionFilter', () => {
     filter = await module.resolve<HttpExceptionFilter>(HttpExceptionFilter);
   });
 
-  it('should catch custom APIError and return errorCode and message ', () => {
+  it('should catch custom APIError and return errorCode and message', () => {
     const customException = new APIError(
       400,
       faker.string.sample(),

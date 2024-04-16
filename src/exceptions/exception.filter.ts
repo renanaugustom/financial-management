@@ -19,12 +19,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     const customError =
-      exception instanceof APIError ? exception : CATALOG_ERRORS.SERVER_ERROR;
+      exception instanceof HttpException
+        ? exception
+        : CATALOG_ERRORS.SERVER_ERROR;
 
     // TODO: Log the error
 
     response.status(customError.getStatus()).json({
-      errorCode: customError.errorCode,
+      errorCode:
+        customError instanceof APIError
+          ? customError.errorCode
+          : customError.getStatus(),
       message: customError.message,
     });
   }

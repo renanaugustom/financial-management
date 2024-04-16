@@ -1,22 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 
 import { UserService } from '@src/user/user.service';
 import { UserCreateDTO } from '@src/user/dtos/user-create.dto';
 import { User } from '@src/user/user.entity';
-import { any, mock } from 'jest-mock-extended';
+import { mock } from 'jest-mock-extended';
 import { faker } from '@faker-js/faker';
 import { plainToInstance } from 'class-transformer';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { UtilsService } from '@src/common/utils.service';
 
 describe('UserService', () => {
   let userService: UserService;
   let userRepositoryMock = mock<Repository<User>>();
-
-  beforeEach(async () => {
-    userService = new UserService(userRepositoryMock);
-  });
+  let utilsServiceMock = mock<UtilsService>();
 
   const userCreateDTO: UserCreateDTO = {
     name: faker.person.fullName(),
@@ -24,7 +20,15 @@ describe('UserService', () => {
     password: faker.internet.password(),
   };
 
-  const userEntity = plainToInstance(User, userCreateDTO);
+  const hashedPassword = 'hashedPassword';
+
+  let userEntity = plainToInstance(User, userCreateDTO);
+  userEntity.password = hashedPassword;
+
+  beforeEach(async () => {
+    userService = new UserService(userRepositoryMock, utilsServiceMock);
+    utilsServiceMock.hashString.mockResolvedValueOnce(hashedPassword);
+  });
 
   describe('createUser', () => {
     it('should create a new user', async () => {
@@ -33,7 +37,7 @@ describe('UserService', () => {
         id: faker.number.int(),
         name: userCreateDTO.name,
         email: userCreateDTO.email,
-        password: userCreateDTO.password,
+        password: hashedPassword,
         createdAt: new Date(),
         updatedAt: new Date(),
         accounts: [],
@@ -76,14 +80,20 @@ describe('UserService', () => {
     it('should throw an error if an unexpected error occurs', async () => {
       // ARRANGE
       const expectedError = new Error('unexpected error');
+
       userRepositoryMock.save.mockRejectedValueOnce(expectedError);
 
       // ACT
-      const promise = userService.createUser(userCreateDTO);
+      let result;
+      try {
+        await userService.createUser(userCreateDTO);
+      } catch (error) {
+        result = error;
+      }
 
       // ASSERT
+      expect(result).toEqual(expectedError);
       expect(userRepositoryMock.save).toHaveBeenCalledWith(userEntity);
-      await expect(promise).rejects.toThrow(expectedError);
     });
   });
 });

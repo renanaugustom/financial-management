@@ -24,4 +24,9 @@ export const CATALOG_ERRORS = {
     '0004',
     'Credit card not found',
   ),
+  USER_NOT_AUTHORIZED: new APIError(
+    HttpStatus.UNAUTHORIZED,
+    '0005',
+    'Unauthorized',
+  ),
 };
