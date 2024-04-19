@@ -10,8 +10,8 @@ import { FinancialAccount } from '@src/financialAccount/financial-account.entity
 
 @Entity('user')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

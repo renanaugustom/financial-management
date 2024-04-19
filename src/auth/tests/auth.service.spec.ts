@@ -26,7 +26,7 @@ describe('AuthService', () => {
     let password = await utilsService.hashString(passwordProvided);
 
     const user: User = {
-      id: 1,
+      id: faker.string.uuid(),
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password,
@@ -80,7 +80,7 @@ describe('AuthService', () => {
     let password = await utilsService.hashString(passwordProvided);
 
     const user: User = {
-      id: 1,
+      id: faker.string.uuid(),
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password,

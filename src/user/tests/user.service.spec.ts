@@ -34,7 +34,7 @@ describe('UserService', () => {
     it('should create a new user', async () => {
       // ARRANGE
       const createdUser: User = {
-        id: faker.number.int(),
+        id: faker.string.uuid(),
         name: userCreateDTO.name,
         email: userCreateDTO.email,
         password: hashedPassword,

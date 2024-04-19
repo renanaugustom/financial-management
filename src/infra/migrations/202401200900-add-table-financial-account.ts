@@ -32,7 +32,7 @@ export class AddTableFinancialAccount1706022572508
           },
           {
             name: 'user_id',
-            type: 'int',
+            type: 'uuid',
             isNullable: false,
           },
           {
