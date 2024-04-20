@@ -11,6 +11,8 @@ describe('CategoryController', () => {
 
   const categoryServiceMock = mock<CategoryService>();
 
+  const createCategoryDTO = { name: faker.string.sample() };
+
   beforeEach(async () => {
     categoryController = new CategoryController(categoryServiceMock);
   });
@@ -41,6 +43,35 @@ describe('CategoryController', () => {
 
       // ACT
       const promise = categoryController.listAll();
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+    });
+  });
+
+  describe('createCategory', () => {
+    it('should create successfully"', async () => {
+      // ARRANGE
+      categoryServiceMock.createCategory.mockResolvedValue();
+
+      // ACT
+      const result = await categoryController.createCategory(createCategoryDTO);
+
+      // ASSERT
+      expect(result).toBeUndefined();
+      expect(categoryServiceMock.createCategory).toHaveBeenCalledWith(
+        createCategoryDTO,
+      );
+    });
+
+    it('should throw exception if createCategory fails"', async () => {
+      // ARRANGE
+      const expectedError = CATALOG_ERRORS.SERVER_ERROR;
+
+      categoryServiceMock.createCategory.mockRejectedValue(expectedError);
+
+      // ACT
+      const promise = categoryController.createCategory(createCategoryDTO);
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);

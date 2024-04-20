@@ -64,18 +64,16 @@ describe('UserService', () => {
       db_duplicated_error.driverError.code = '23505';
 
       userRepositoryMock.save.mockRejectedValueOnce(db_duplicated_error);
-      let expectedError;
 
       // ACT
-      try {
-        await userService.createUser(userCreateDTO);
-      } catch (error) {
-        expectedError = error;
-      }
+      const promise = userService.createUser(userCreateDTO);
 
       // ASSERT
+      await expect(promise).rejects.toThrow(
+        CATALOG_ERRORS.DB_DUPLICATED_ERROR('user'),
+      );
+
       expect(userRepositoryMock.save).toHaveBeenCalledWith(userEntity);
-      expect(expectedError).toEqual(CATALOG_ERRORS.DB_DUPLICATED_ERROR('user'));
     });
 
     it('should throw an error if an unexpected error occurs', async () => {
