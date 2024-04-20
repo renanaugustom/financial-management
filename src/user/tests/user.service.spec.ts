@@ -40,6 +40,7 @@ describe('UserService', () => {
         password: hashedPassword,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isAdmin: false,
         accounts: [],
       };
 

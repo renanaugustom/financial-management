@@ -13,6 +13,7 @@ import { CategoryModule } from '@src/category/category.module';
 import { CreditCardModule } from '@src/creditCard/credit-card.module';
 import { AuthModule } from '@src/auth/auth.module';
 import { AuthGuard } from '@src/auth/auth.guard';
+import { RolesGuard } from './auth/roles/roles.guard';
 
 @Module({
   imports: [
@@ -33,6 +34,10 @@ import { AuthGuard } from '@src/auth/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

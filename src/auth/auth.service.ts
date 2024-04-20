@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { Role } from './dtos/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -22,12 +23,22 @@ export class AuthService {
       throw CATALOG_ERRORS.USER_NOT_AUTHORIZED;
     }
 
-    const { name } = user;
-
-    const payload = { sub: user.id, username: name };
+    const payload = {
+      sub: user.id,
+      username: user.name,
+      roles: this._buildRoles(user),
+    };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
+  }
+
+  private _buildRoles(user: User) {
+    let roles = [];
+
+    user.isAdmin ? roles.push(Role.Admin) : roles.push(Role.User);
+
+    return roles;
   }
 }

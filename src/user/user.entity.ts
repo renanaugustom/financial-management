@@ -28,6 +28,9 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
+  @Column({ name: 'is_admin', default: false })
+  isAdmin: boolean;
+
   @OneToMany(() => FinancialAccount, (account) => account.user)
   accounts: FinancialAccount[];
 }
