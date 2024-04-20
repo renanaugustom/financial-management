@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
@@ -36,9 +37,9 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = (await this.jwtService.verifyAsync(token, {
         secret: 'secret',
-      });
+      })) as UserContextDTO;
 
       request['user'] = payload;
     } catch (error) {

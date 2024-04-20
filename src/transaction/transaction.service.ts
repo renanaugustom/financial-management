@@ -11,6 +11,7 @@ import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
 import { CreditCard } from '@src/creditCard/credit-card.entity';
 
 import { ORMUtils } from '@src/common/orm-utils';
+import { FinancialAccount } from '@src/financialAccount/financial-account.entity';
 
 @Injectable()
 export class TransactionService {
@@ -21,12 +22,14 @@ export class TransactionService {
     private transactionRepository: Repository<Transaction>,
     @InjectRepository(CreditCard)
     private creditCardRepository: Repository<CreditCard>,
+    @InjectRepository(FinancialAccount)
+    private financialAccountRepository: Repository<FinancialAccount>,
   ) {
     this._ormUtils = new ORMUtils();
   }
 
-  async createTransaction(transaction: TransactionCreateDTO) {
-    await this.verifyIfCreditCardBelongsToUser(transaction);
+  async createTransaction(userId: string, transaction: TransactionCreateDTO) {
+    await this.verifyIfAccountAndCreditCardBelongsToUser(userId, transaction);
 
     const transactionEntity = plainToInstance(Transaction, transaction);
 
@@ -88,18 +91,26 @@ export class TransactionService {
     });
   }
 
-  private async verifyIfCreditCardBelongsToUser(
+  private async verifyIfAccountAndCreditCardBelongsToUser(
+    userId: string,
     transaction: TransactionCreateDTO,
   ) {
+    const financialAccount = await this.financialAccountRepository.findOneBy({
+      id: transaction.financialAccountId,
+      userId,
+    });
+
+    if (!financialAccount) {
+      throw CATALOG_ERRORS.FINANCIAL_ACCOUNT_DOESNT_BELONG_TO_USER;
+    }
+
     if (transaction.creditCardId) {
       const creditCard = await this.creditCardRepository.findOneBy({
         id: transaction.creditCardId,
+        financialAccountId: transaction.financialAccountId,
       });
 
-      if (
-        !creditCard ||
-        creditCard.financialAccountId !== transaction.financialAccountId
-      ) {
+      if (!creditCard) {
         throw CATALOG_ERRORS.CREDIT_CARD_DOESNT_BELONG_TO_ACCOUNT;
       }
     }

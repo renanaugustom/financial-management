@@ -11,7 +11,7 @@ describe('ORMUtils', () => {
   describe('filterByStartAndEndDate', () => {
     it('should return a FindOperator with Between condition when both startDate and endDate are provided', () => {
       // ARRANGE
-      const startDate = new Date('2022-01-01');
+      const startDate = new Date('2022-01-01T00:00:00-03:00');
       const endDate = new Date('2022-01-31T00:00:00-03:00');
       const expectedEndDate = new Date(endDate.setHours(23, 59, 59, 999));
 
@@ -26,7 +26,7 @@ describe('ORMUtils', () => {
 
     it('should return a FindOperator with MoreThanOrEqual condition when only startDate is provided', () => {
       // ARRANGE
-      const startDate = new Date('2022-01-01');
+      const startDate = new Date('2022-01-01T00:00:00-03:00');
 
       // ACT
       const result = ormUtils.filterByStartAndEndDate(startDate);

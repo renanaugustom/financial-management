@@ -6,7 +6,8 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
-import { Role } from './dtos/role.enum';
+import { Role } from '@src/auth/dtos/role.enum';
+import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,9 +24,9 @@ export class AuthService {
       throw CATALOG_ERRORS.USER_NOT_AUTHORIZED;
     }
 
-    const payload = {
+    const payload: UserContextDTO = {
       sub: user.id,
-      username: user.name,
+      userName: user.name,
       roles: this._buildRoles(user),
     };
 

@@ -29,4 +29,9 @@ export const CATALOG_ERRORS = {
     '0005',
     'Unauthorized',
   ),
+  FINANCIAL_ACCOUNT_DOESNT_BELONG_TO_USER: new APIError(
+    HttpStatus.CONFLICT,
+    '0006',
+    'Financial account doesn`t belong to user',
+  ),
 };

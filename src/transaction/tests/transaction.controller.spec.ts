@@ -6,12 +6,17 @@ import { TransactionService } from '@src/transaction/transaction.service';
 import { TransactionCreateDTO } from '@src/transaction/dtos/transaction-create.dto';
 import { TransactionListDTO } from '@src/transaction/dtos/transaction-list.dto';
 import { TransactionFilterDTO } from '@src/transaction/dtos/transaction-filter.dto';
+import { Request } from 'express';
 
 describe('TransactionController', () => {
   let transactionController: TransactionController;
   let transactionServiceMock = mock<TransactionService>();
+  let requestMock = mock<Request>();
+
+  const userId = faker.string.uuid();
 
   beforeEach(async () => {
+    requestMock['user'] = { sub: userId };
     transactionController = new TransactionController(transactionServiceMock);
   });
 
@@ -23,8 +28,6 @@ describe('TransactionController', () => {
     value: faker.number.int({ min: 0, max: 100000 }),
     creditCardId: faker.string.uuid(),
   };
-
-  const userId = faker.string.uuid();
 
   const transactionGetDTO: TransactionFilterDTO = {
     categoryId: faker.string.uuid(),
@@ -42,10 +45,11 @@ describe('TransactionController', () => {
       transactionServiceMock.createTransaction.mockResolvedValueOnce(undefined);
 
       // ACT
-      await transactionController.create(newTransactionDTO);
+      await transactionController.create(requestMock, newTransactionDTO);
 
       // ASSERT
       expect(transactionServiceMock.createTransaction).toHaveBeenCalledWith(
+        userId,
         newTransactionDTO,
       );
     });
@@ -59,10 +63,17 @@ describe('TransactionController', () => {
       );
 
       // ACT
-      const promise = transactionController.create(newTransactionDTO);
+      const promise = transactionController.create(
+        requestMock,
+        newTransactionDTO,
+      );
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);
+      expect(transactionServiceMock.createTransaction).toHaveBeenCalledWith(
+        userId,
+        newTransactionDTO,
+      );
     });
   });
 
@@ -95,7 +106,7 @@ describe('TransactionController', () => {
 
       // ACT
       const result = await transactionController.filterByUser(
-        userId,
+        requestMock,
         transactionGetDTO.type,
         transactionGetDTO.startDate,
         transactionGetDTO.endDate,
@@ -120,7 +131,7 @@ describe('TransactionController', () => {
 
       // ACT
       const promise = transactionController.filterByUser(
-        userId,
+        requestMock,
         transactionGetDTO.type,
         transactionGetDTO.startDate,
         transactionGetDTO.endDate,
@@ -154,7 +165,7 @@ describe('TransactionController', () => {
 
       // ACT
       const result = await transactionController.filterByCreditCard(
-        userId,
+        requestMock,
         creditCardId,
       );
 
@@ -176,7 +187,7 @@ describe('TransactionController', () => {
 
       // ACT
       const promise = transactionController.filterByCreditCard(
-        userId,
+        requestMock,
         creditCardId,
       );
 

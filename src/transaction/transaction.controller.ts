@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
@@ -9,6 +9,8 @@ import { TransactionService } from '@src/transaction/transaction.service';
 import { TransactionCreateDTO } from '@src/transaction/dtos/transaction-create.dto';
 import { TransactionListDTO } from '@src/transaction/dtos/transaction-list.dto';
 import { TransactionFilterDTO } from '@src/transaction/dtos/transaction-filter.dto';
+import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
+import { Request } from 'express';
 
 @Controller('transaction')
 export class TransactionController {
@@ -20,38 +22,46 @@ export class TransactionController {
     tags: ['Transaction'],
   })
   @ApiCreatedResponse()
-  async create(@Body() newTransaction: TransactionCreateDTO): Promise<void> {
-    await this.transactionService.createTransaction(newTransaction);
+  async create(
+    @Req() request: Request,
+    @Body() newTransaction: TransactionCreateDTO,
+  ): Promise<void> {
+    const user = request['user'] as UserContextDTO;
+
+    await this.transactionService.createTransaction(user.sub, newTransaction);
   }
 
-  @Get(':userId/filter')
+  @Get('/filter')
   @ApiOperation({
-    summary: 'List transactions by user ID',
+    summary: 'List user transactions',
     tags: ['Transaction'],
   })
   @ApiOkResponse({
-    description: 'Filter transactions by user ID',
+    description: 'List transactions',
+    type: [TransactionListDTO],
   })
   async filterByUser(
-    @Param('userId') userId: string,
+    @Req() request: Request,
     @Query('type') type?: string,
     @Query('startDate') startDate?: Date,
     @Query('endDate') endDate?: Date,
     @Query('financialAccountId') financialAccountId?: string,
     @Query('categoryId') categoryId?: string,
   ): Promise<Array<TransactionListDTO>> {
-    const filter = new TransactionFilterDTO(
+    const filter: TransactionFilterDTO = {
       startDate,
       endDate,
       financialAccountId,
       categoryId,
       type,
-    );
+    };
 
-    return await this.transactionService.listByUserId(userId, filter);
+    const user = request['user'] as UserContextDTO;
+
+    return await this.transactionService.listByUserId(user.sub, filter);
   }
 
-  @Get(':userId/credit-card/:creditCardId')
+  @Get('/credit-card/:creditCardId')
   @ApiOperation({
     summary: 'List transactions by user ID and credit card ID',
     tags: ['Transaction'],
@@ -60,11 +70,13 @@ export class TransactionController {
     description: 'Filter transactions by user ID and credit card ID',
   })
   async filterByCreditCard(
-    @Param('userId') userId: string,
+    @Req() request: Request,
     @Param('creditCardId') creditCardId: string,
   ): Promise<Array<TransactionListDTO>> {
+    const user = request['user'] as UserContextDTO;
+
     return await this.transactionService.listByUserAndCreditCard(
-      userId,
+      user.sub,
       creditCardId,
     );
   }

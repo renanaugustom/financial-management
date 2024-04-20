@@ -18,13 +18,17 @@ describe('TransactionService', () => {
   let transactionService: TransactionService;
   let transactionRepositoryMock = mock<Repository<Transaction>>();
   let creditCardRepositoryMock = mock<Repository<CreditCard>>();
+  let financialAccountRepositoryMock = mock<Repository<FinancialAccount>>();
 
   beforeEach(async () => {
     transactionService = new TransactionService(
       transactionRepositoryMock,
       creditCardRepositoryMock,
+      financialAccountRepositoryMock,
     );
   });
+
+  const userId = faker.string.uuid();
 
   const creditCard: CreditCard = {
     id: faker.string.uuid(),
@@ -36,7 +40,9 @@ describe('TransactionService', () => {
     paymentDay: faker.number.int({ min: 1, max: 31 }),
     createdAt: new Date(),
     updatedAt: new Date(),
-    financialAccount: new FinancialAccount(),
+    financialAccount: {
+      userId,
+    } as FinancialAccount,
     transactions: [],
   };
 
@@ -71,37 +77,78 @@ describe('TransactionService', () => {
         newTransactionEntity,
       );
 
+      financialAccountRepositoryMock.findOneBy.mockResolvedValueOnce(
+        creditCard.financialAccount,
+      );
       creditCardRepositoryMock.findOneBy.mockResolvedValue(creditCard);
 
       const transactionEntity = plainToInstance(Transaction, newTransactionDTO);
 
       // ACT
-      const result =
-        await transactionService.createTransaction(newTransactionDTO);
+      const result = await transactionService.createTransaction(
+        userId,
+        newTransactionDTO,
+      );
 
-      // ASS
+      // ASSERT
       expect(transactionRepositoryMock.save).toHaveBeenCalledWith(
         transactionEntity,
       );
+
+      expect(financialAccountRepositoryMock.findOneBy).toHaveBeenCalledWith({
+        id: newTransactionDTO.financialAccountId,
+        userId,
+      });
+
       expect(creditCardRepositoryMock.findOneBy).toHaveBeenCalledWith({
         id: newTransactionDTO.creditCardId,
+        financialAccountId: newTransactionDTO.financialAccountId,
       });
+
       expect(result).toBeUndefined();
     });
 
     it('should throw error if any error occurs', async () => {
       // ARRANGE
       const error = new Error('any error');
-      creditCardRepositoryMock.findOneBy.mockRejectedValueOnce(error);
+      financialAccountRepositoryMock.findOneBy.mockRejectedValueOnce(error);
 
       // ACT
-      const promise = transactionService.createTransaction(newTransactionDTO);
+      const promise = transactionService.createTransaction(
+        userId,
+        newTransactionDTO,
+      );
 
       //ASSERT
       await expect(promise).rejects.toThrow(error);
-      expect(creditCardRepositoryMock.findOneBy).toHaveBeenCalledWith({
-        id: newTransactionDTO.creditCardId,
+      expect(financialAccountRepositoryMock.findOneBy).toHaveBeenCalledWith({
+        id: newTransactionDTO.financialAccountId,
+        userId,
       });
+      expect(creditCardRepositoryMock.findOneBy).not.toHaveBeenCalled();
+      expect(transactionRepositoryMock.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw FINANCIAL_ACCOUNT_DOESNT_BELONG_TO_USER if financial account doesn`t belong to user', async () => {
+      // ARRANGE
+      const expectedError =
+        CATALOG_ERRORS.FINANCIAL_ACCOUNT_DOESNT_BELONG_TO_USER;
+
+      financialAccountRepositoryMock.findOneBy.mockResolvedValue(undefined);
+
+      // ACT
+      const promise = transactionService.createTransaction(
+        userId,
+        newTransactionDTO,
+      );
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+      expect(financialAccountRepositoryMock.findOneBy).toHaveBeenCalledWith({
+        id: newTransactionDTO.financialAccountId,
+        userId,
+      });
+      expect(creditCardRepositoryMock.findOneBy).not.toHaveBeenCalled();
       expect(transactionRepositoryMock.save).not.toHaveBeenCalled();
     });
 
@@ -109,29 +156,26 @@ describe('TransactionService', () => {
       // ARRANGE
       const expectedError = CATALOG_ERRORS.CREDIT_CARD_DOESNT_BELONG_TO_ACCOUNT;
 
-      const anotherCreditCard: CreditCard = {
-        id: faker.string.uuid(),
-        description: 'Another credit card',
-        brand: faker.finance.creditCardIssuer(),
-        limit: faker.number.int({ min: 0, max: 100000 }),
-        financialAccountId: faker.string.uuid(),
-        invoiceDay: faker.number.int({ min: 1, max: 31 }),
-        paymentDay: faker.number.int({ min: 1, max: 31 }),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        financialAccount: new FinancialAccount(),
-        transactions: [],
-      };
-
-      creditCardRepositoryMock.findOneBy.mockResolvedValue(anotherCreditCard);
+      financialAccountRepositoryMock.findOneBy.mockResolvedValueOnce(
+        creditCard.financialAccount,
+      );
+      creditCardRepositoryMock.findOneBy.mockResolvedValue(undefined);
 
       // ACT
-      const promise = transactionService.createTransaction(newTransactionDTO);
+      const promise = transactionService.createTransaction(
+        userId,
+        newTransactionDTO,
+      );
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);
+      expect(financialAccountRepositoryMock.findOneBy).toHaveBeenCalledWith({
+        id: newTransactionDTO.financialAccountId,
+        userId,
+      });
       expect(creditCardRepositoryMock.findOneBy).toHaveBeenCalledWith({
         id: newTransactionDTO.creditCardId,
+        financialAccountId: newTransactionDTO.financialAccountId,
       });
       expect(transactionRepositoryMock.save).not.toHaveBeenCalled();
     });
@@ -141,8 +185,6 @@ describe('TransactionService', () => {
     it('should return transactions filtered by user ID', async () => {
       // ARRANGE
       const ormUtils = new ORMUtils();
-
-      const userId = faker.string.uuid();
 
       const filter: TransactionFilterDTO = {
         type: 'INCOME',
@@ -235,7 +277,6 @@ describe('TransactionService', () => {
   describe('listByUserAndCreditCard', () => {
     it('should return transactions filtered by user ID and credit card ID', async () => {
       // ARRANGE
-      const userId = faker.string.uuid();
       const creditCardId = faker.string.uuid();
 
       const transactions: Transaction[] = [

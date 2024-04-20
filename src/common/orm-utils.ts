@@ -1,3 +1,4 @@
+import { start } from 'repl';
 import {
   Between,
   FindOperator,
@@ -7,18 +8,18 @@ import {
 
 export class ORMUtils {
   public filterByStartAndEndDate(
-    startDate?: Date,
+    startDate?: string | Date,
     endDate?: Date,
   ): FindOperator<Date> {
+    if (!startDate && !endDate) return;
+
     const formattedStartDate = startDate
-      ? new Date(startDate.toISOString().split('T')[0])
+      ? new Date(new Date(startDate).setHours(0, 0, 0))
       : null;
 
     const formattedEndDate = endDate
       ? new Date(new Date(endDate).setHours(23, 59, 59, 999))
       : null;
-
-    if (!startDate && !endDate) return;
 
     if (startDate && !endDate) return MoreThanOrEqual(formattedStartDate);
 
