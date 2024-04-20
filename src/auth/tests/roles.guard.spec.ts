@@ -4,6 +4,7 @@ import { mock } from 'jest-mock-extended';
 
 import { RolesGuard } from '@src/auth/roles/roles.guard';
 import { Role } from '@src/auth/dtos/role.enum';
+import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
 
 describe('RolesGuard', () => {
   let rolesGuard: RolesGuard;
@@ -50,16 +51,24 @@ describe('RolesGuard', () => {
       expect(result).toBe(true);
     });
 
-    it('should return false if user does not have the required role', () => {
+    it('should throw user not authorized if user does not have the required role', () => {
       // ARRANGE
       const requiredRoles = [Role.User];
       reflectorMock.getAllAndOverride.mockReturnValue(requiredRoles);
 
+      const expectedError = CATALOG_ERRORS.USER_NOT_AUTHORIZED;
+
       // ACT
-      const result = rolesGuard.canActivate(mockExecutionContext);
+      let result;
+
+      try {
+        rolesGuard.canActivate(mockExecutionContext);
+      } catch (error) {
+        result = error;
+      }
 
       // ASSERT
-      expect(result).toBe(false);
+      expect(result).toEqual(expectedError);
     });
   });
 });

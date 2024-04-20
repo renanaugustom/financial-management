@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { SetMetadata } from '@nestjs/common';
 
 import { Role } from '@src/auth/dtos/role.enum';
+import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
 
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
@@ -23,6 +24,10 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    if (requiredRoles.some((role) => user.roles?.includes(role))) {
+      return true;
+    }
+
+    throw CATALOG_ERRORS.USER_NOT_AUTHORIZED;
   }
 }
