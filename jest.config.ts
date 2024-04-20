@@ -29,9 +29,9 @@ export default {
   testTimeout: 15000,
   coverageThreshold: {
     global: {
-      lines: 85,
-      branches: 85,
-      functions: 85,
+      lines: 95,
+      branches: 95,
+      functions: 95,
     },
   },
 };

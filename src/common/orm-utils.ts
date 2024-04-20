@@ -11,7 +11,7 @@ export class ORMUtils {
     endDate?: Date,
   ): FindOperator<Date> {
     const formattedStartDate = startDate
-      ? new Date(startDate.toString().split('T')[0])
+      ? new Date(startDate.toISOString().split('T')[0])
       : null;
 
     const formattedEndDate = endDate
