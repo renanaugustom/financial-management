@@ -39,4 +39,9 @@ export const CATALOG_ERRORS = {
     '0007',
     'User doesn`t exists',
   ),
+  CATEGORY_NOT_EXISTS: new APIError(
+    HttpStatus.NOT_FOUND,
+    '0008',
+    'Category doesn`t exists',
+  ),
 };

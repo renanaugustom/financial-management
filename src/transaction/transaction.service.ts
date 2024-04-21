@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 
 import { Transaction } from '@src/transaction/transaction.entity';
@@ -33,7 +33,17 @@ export class TransactionService {
 
     const transactionEntity = plainToInstance(Transaction, transaction);
 
-    await this.transactionRepository.save(transactionEntity);
+    try {
+      await this.transactionRepository.save(transactionEntity);
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        if (error.driverError.constraint === 'categoryIdFK') {
+          throw CATALOG_ERRORS.CATEGORY_NOT_EXISTS;
+        }
+      }
+
+      throw error;
+    }
   }
 
   async listByUserId(

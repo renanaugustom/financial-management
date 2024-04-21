@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsDate, IsNumber, IsString, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class TransactionCreateDTO {
   @IsNotEmpty()
@@ -10,7 +16,7 @@ export class TransactionCreateDTO {
   value: number;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   date: Date;
 
   @IsNotEmpty()

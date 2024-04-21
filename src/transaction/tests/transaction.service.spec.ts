@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { mock } from 'jest-mock-extended';
 
 import { TransactionService } from '@src/transaction/transaction.service';
@@ -178,6 +178,65 @@ describe('TransactionService', () => {
         financialAccountId: newTransactionDTO.financialAccountId,
       });
       expect(transactionRepositoryMock.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw CATEGORY_NOT_EXISTS if category does not exists', async () => {
+      // ARRANGE
+      const expectedError = CATALOG_ERRORS.CATEGORY_NOT_EXISTS;
+
+      const dbNotFoundFKError = new QueryFailedError<any>(
+        'query',
+        [],
+        new Error('', {}),
+      );
+      dbNotFoundFKError.driverError.constraint = 'categoryIdFK';
+
+      financialAccountRepositoryMock.findOneBy.mockResolvedValueOnce(
+        creditCard.financialAccount,
+      );
+      creditCardRepositoryMock.findOneBy.mockResolvedValue(creditCard);
+
+      transactionRepositoryMock.save.mockRejectedValueOnce(dbNotFoundFKError);
+
+      // ACT
+      const promise = transactionService.createTransaction(
+        userId,
+        newTransactionDTO,
+      );
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+      expect(financialAccountRepositoryMock.findOneBy).toHaveBeenCalledWith({
+        id: newTransactionDTO.financialAccountId,
+        userId,
+      });
+      expect(creditCardRepositoryMock.findOneBy).toHaveBeenCalledWith({
+        id: newTransactionDTO.creditCardId,
+        financialAccountId: newTransactionDTO.financialAccountId,
+      });
+      expect(transactionRepositoryMock.save).toHaveBeenCalledWith({
+        ...plainToInstance(Transaction, newTransactionDTO),
+      });
+    });
+
+    it('should throw error if any error occurs when try to save', async () => {
+      // ARRANGE
+      const error = new Error('any error');
+      transactionRepositoryMock.save.mockRejectedValueOnce(error);
+
+      financialAccountRepositoryMock.findOneBy.mockResolvedValueOnce(
+        creditCard.financialAccount,
+      );
+      creditCardRepositoryMock.findOneBy.mockResolvedValue(creditCard);
+
+      // ACT
+      const promise = transactionService.createTransaction(
+        userId,
+        newTransactionDTO,
+      );
+
+      //ASSERT
+      await expect(promise).rejects.toThrow(error);
     });
   });
 
