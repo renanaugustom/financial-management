@@ -56,14 +56,14 @@ describe('UserService', () => {
 
     it('should throw an error when the user already exists', async () => {
       // ARRANGE
-      const db_duplicated_error = new QueryFailedError<any>(
+      const dbDuplicatedError = new QueryFailedError<any>(
         'query',
         [],
         new Error('', {}),
       );
-      db_duplicated_error.driverError.code = '23505';
+      dbDuplicatedError.driverError.code = '23505';
 
-      userRepositoryMock.save.mockRejectedValueOnce(db_duplicated_error);
+      userRepositoryMock.save.mockRejectedValueOnce(dbDuplicatedError);
 
       // ACT
       const promise = userService.createUser(userCreateDTO);

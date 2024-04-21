@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { mock } from 'jest-mock-extended';
 
 import { FinancialAccountService } from '@src/financialAccount/financial-account.service';
@@ -6,6 +6,7 @@ import { FinancialAccount } from '@src/financialAccount/financial-account.entity
 import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-account-create.dto';
 import { faker } from '@faker-js/faker';
 import { plainToInstance } from 'class-transformer';
+import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
 
 describe('FinancialAccountService', () => {
   let financialAccountService: FinancialAccountService;
@@ -49,6 +50,28 @@ describe('FinancialAccountService', () => {
       const expectedError = new Error('any error');
 
       financialAccountRepositoryMock.save.mockRejectedValueOnce(expectedError);
+
+      // ACT
+      const promise = financialAccountService.createAccount(
+        newFinancialAccountDto,
+      );
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+    });
+
+    it('should throw exception if user does not exists', async () => {
+      // ARRANGE
+      const dbUserFkError = new QueryFailedError<any>(
+        'query',
+        [],
+        new Error('', {}),
+      );
+      dbUserFkError.driverError.constraint = 'userIdFK';
+
+      const expectedError = CATALOG_ERRORS.USER_NOT_EXISTS;
+
+      financialAccountRepositoryMock.save.mockRejectedValueOnce(dbUserFkError);
 
       // ACT
       const promise = financialAccountService.createAccount(

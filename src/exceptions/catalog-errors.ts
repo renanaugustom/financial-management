@@ -34,4 +34,9 @@ export const CATALOG_ERRORS = {
     '0006',
     'Financial account doesn`t belong to user',
   ),
+  USER_NOT_EXISTS: new APIError(
+    HttpStatus.NOT_FOUND,
+    '0007',
+    'User doesn`t exists',
+  ),
 };
