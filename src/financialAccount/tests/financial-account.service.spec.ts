@@ -7,6 +7,7 @@ import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-
 import { faker } from '@faker-js/faker';
 import { plainToInstance } from 'class-transformer';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
 
 describe('FinancialAccountService', () => {
   let financialAccountService: FinancialAccountService;
@@ -18,11 +19,13 @@ describe('FinancialAccountService', () => {
     );
   });
 
+  const userId = faker.string.uuid();
+
   const newFinancialAccountDto: FinancialAccountCreateDTO = {
     balance: faker.number.int({ min: 0, max: 100000 }),
     name: faker.finance.accountName(),
     type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
-    userId: faker.string.uuid(),
+    userId,
   };
 
   describe('createAccount', () => {
@@ -77,6 +80,69 @@ describe('FinancialAccountService', () => {
       const promise = financialAccountService.createAccount(
         newFinancialAccountDto,
       );
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+    });
+  });
+
+  describe('listByUserId', () => {
+    it('should list financial accounts by user ID', async () => {
+      // ARRANGE
+      const financialAccountResponse = [
+        {
+          id: faker.string.uuid(),
+          balance: faker.number.int({ min: 0, max: 100000 }),
+          name: faker.finance.accountName(),
+          type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
+          userId,
+          createdAt: faker.date.recent(),
+          updatedAt: faker.date.recent(),
+        },
+      ] as FinancialAccount[];
+
+      financialAccountRepositoryMock.find.mockResolvedValue(
+        financialAccountResponse,
+      );
+
+      const expectedResult = financialAccountResponse.map((account) => {
+        return plainToInstance(FinancialAccountListDTO, account, {
+          excludeExtraneousValues: true,
+        });
+      });
+
+      // ACT
+      const result = await financialAccountService.listByUserId(userId);
+
+      // ASSERT
+      expect(financialAccountRepositoryMock.find).toHaveBeenCalledWith({
+        where: { userId },
+      });
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should return an empty array if no financial accounts are found', async () => {
+      // ARRANGE
+      financialAccountRepositoryMock.find.mockResolvedValue([]);
+
+      // ACT
+      const result = await financialAccountService.listByUserId(userId);
+
+      // ASSERT
+      expect(financialAccountRepositoryMock.find).toHaveBeenCalledWith({
+        where: { userId },
+      });
+      expect(result).toEqual([]);
+    });
+
+    it('should throw exception if listByUserId fails', async () => {
+      // ARRANGE
+      const expectedError = new Error('any error');
+
+      financialAccountRepositoryMock.find.mockRejectedValueOnce(expectedError);
+
+      // ACT
+      const promise = financialAccountService.listByUserId(userId);
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);

@@ -1,26 +1,34 @@
 import { mock } from 'jest-mock-extended';
 import { faker } from '@faker-js/faker/locale/af_ZA';
+import { Request } from 'express';
 
 import { FinancialAccountController } from '@src/financialAccount/financial-account.controller';
 import { FinancialAccountService } from '@src/financialAccount/financial-account.service';
 import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-account-create.dto';
+import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
 
 describe('FinancialAccountController', () => {
   let financialAccountController: FinancialAccountController;
 
   const financialAccountServiceMock = mock<FinancialAccountService>();
+  const requestMock = mock<Request>();
+
+  const userId = faker.string.uuid();
 
   beforeEach(async () => {
     financialAccountController = new FinancialAccountController(
       financialAccountServiceMock,
     );
+    requestMock['user'] = {
+      sub: userId,
+    };
   });
 
   const newFinancialAccount: FinancialAccountCreateDTO = {
     balance: faker.number.int({ min: 0, max: 100000 }),
     name: faker.finance.accountName(),
     type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
-    userId: faker.string.uuid(),
+    userId,
   };
 
   describe('create', () => {
@@ -47,6 +55,47 @@ describe('FinancialAccountController', () => {
 
       // ACT
       const promise = financialAccountController.create(newFinancialAccount);
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+    });
+  });
+
+  describe('listByUserId', () => {
+    it('should list financial accounts by user ID', async () => {
+      // ARRANGE
+      const financialAccountResponse = [
+        {
+          id: faker.string.uuid(),
+          balance: faker.number.int({ min: 0, max: 100000 }),
+          name: faker.finance.accountName(),
+          type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
+          userId,
+        },
+      ] as FinancialAccountListDTO[];
+
+      financialAccountServiceMock.listByUserId.mockResolvedValue(
+        financialAccountResponse,
+      );
+
+      // ACT
+      const result = await financialAccountController.listByUserId(requestMock);
+
+      // ASSERT
+      expect(financialAccountServiceMock.listByUserId).toHaveBeenCalledWith(
+        userId,
+      );
+      expect(result).toEqual(financialAccountResponse);
+    });
+
+    it('should throw exception if list fails', async () => {
+      // ARRANGE
+      const expectedError = new Error('any error');
+
+      financialAccountServiceMock.listByUserId.mockRejectedValue(expectedError);
+
+      // ACT
+      const promise = financialAccountController.listByUserId(requestMock);
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);
