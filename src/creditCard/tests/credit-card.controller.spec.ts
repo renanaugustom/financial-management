@@ -6,6 +6,7 @@ import { CreditCardController } from '@src/creditCard/credit-card.controller';
 import { CreditCardService } from '@src/creditCard/credit-card.service';
 import { CreditCardCreateDTO } from '@src/creditCard/dtos/credit-card-create.dto';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
+import { CreditCardGetDto } from '../dtos/credit-card-get.dto';
 
 describe('CreditCardController', () => {
   let creditCardController: CreditCardController;
@@ -58,6 +59,41 @@ describe('CreditCardController', () => {
 
       // ACT
       const promise = creditCardController.create(requestMock, newCreditCard);
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+    });
+  });
+
+  describe('listByUser', () => {
+    it('should list credit cards from user', async () => {
+      // ARRANGE
+      const creditCardList = [
+        {
+          id: faker.string.uuid(),
+          brand: faker.finance.creditCardIssuer(),
+          description: 'My first',
+        } as CreditCardGetDto,
+      ];
+
+      creditCardServiceMock.listByUser.mockResolvedValue(creditCardList);
+
+      // ACT
+      const result = await creditCardController.listByUser(requestMock);
+
+      // ASSERT
+      expect(result).toEqual(creditCardList);
+      expect(creditCardServiceMock.listByUser).toHaveBeenCalledWith(userId);
+    });
+
+    it('should throw exception if list fails', async () => {
+      // ARRANGE
+      const expectedError = CATALOG_ERRORS.SERVER_ERROR;
+
+      creditCardServiceMock.listByUser.mockRejectedValue(expectedError);
+
+      // ACT
+      const promise = creditCardController.listByUser(requestMock);
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);

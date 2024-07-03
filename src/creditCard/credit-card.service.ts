@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 
 import { CreditCard } from '@src/creditCard/credit-card.entity';
@@ -44,6 +44,25 @@ export class CreditCardService {
     }
 
     return plainToInstance(CreditCardGetDto, creditCardEntity);
+  }
+
+  async listByUser(userId: string): Promise<CreditCardGetDto[]> {
+    const creditCards = await this.creditCardRepository.find({
+      relations: {
+        financialAccount: true,
+      },
+      where: {
+        financialAccount: {
+          userId,
+        },
+      },
+    });
+
+    return creditCards.map((creditCard) =>
+      plainToInstance(CreditCardGetDto, creditCard, {
+        excludeExtraneousValues: true,
+      }),
+    );
   }
 
   private async _checkIfAccountBelongsToUser(

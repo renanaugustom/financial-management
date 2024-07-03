@@ -179,4 +179,47 @@ describe('CreditCardService', () => {
       await expect(promise).rejects.toThrow(expectedError);
     });
   });
+
+  describe('listByUser', () => {
+    it('should list credit cards from user', async () => {
+      // ARRANGE
+      const creditCardList = [newCreditCardEntity];
+      const expectedResult = [
+        plainToInstance(CreditCardGetDto, newCreditCard, {
+          excludeExtraneousValues: true,
+        }),
+      ];
+
+      creditCardRepositoryMock.find.mockResolvedValueOnce(creditCardList);
+
+      // ACT
+      const result = await creditCardService.listByUser(userId);
+
+      // ASSERT
+      expect(result).toEqual(expectedResult);
+      expect(creditCardRepositoryMock.find).toHaveBeenCalledWith({
+        relations: {
+          financialAccount: true,
+        },
+        where: {
+          financialAccount: {
+            userId,
+          },
+        },
+      });
+    });
+
+    it('should throw server error exception if listByUser fails', async () => {
+      // ARRANGE
+      const expectedError = new Error('any error');
+
+      creditCardRepositoryMock.find.mockRejectedValueOnce(expectedError);
+
+      // ACT
+      const promise = creditCardService.listByUser(userId);
+
+      // ASSERT
+      await expect(promise).rejects.toThrow(expectedError);
+    });
+  });
 });
