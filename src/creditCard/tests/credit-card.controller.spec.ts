@@ -1,15 +1,19 @@
 import { mock } from 'jest-mock-extended';
+import { faker } from '@faker-js/faker';
+import { Request } from 'express';
 
 import { CreditCardController } from '@src/creditCard/credit-card.controller';
 import { CreditCardService } from '@src/creditCard/credit-card.service';
 import { CreditCardCreateDTO } from '@src/creditCard/dtos/credit-card-create.dto';
-import { faker } from '@faker-js/faker';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
 
 describe('CreditCardController', () => {
   let creditCardController: CreditCardController;
 
   const creditCardServiceMock = mock<CreditCardService>();
+  const requestMock = mock<Request>();
+
+  const userId = faker.string.uuid();
 
   const newCreditCard: CreditCardCreateDTO = {
     brand: faker.finance.creditCardIssuer(),
@@ -22,6 +26,9 @@ describe('CreditCardController', () => {
 
   beforeEach(async () => {
     creditCardController = new CreditCardController(creditCardServiceMock);
+    requestMock['user'] = {
+      sub: userId,
+    };
   });
 
   describe('create', () => {
@@ -30,11 +37,15 @@ describe('CreditCardController', () => {
       creditCardServiceMock.createCreditCard.mockResolvedValue(newCreditCard);
 
       // ACT
-      const result = await creditCardController.create(newCreditCard);
+      const result = await creditCardController.create(
+        requestMock,
+        newCreditCard,
+      );
 
       // ASSERT
       expect(result).toBeUndefined();
       expect(creditCardServiceMock.createCreditCard).toHaveBeenCalledWith(
+        userId,
         newCreditCard,
       );
     });
@@ -46,7 +57,7 @@ describe('CreditCardController', () => {
       creditCardServiceMock.createCreditCard.mockRejectedValue(expectedError);
 
       // ACT
-      const promise = creditCardController.create(newCreditCard);
+      const promise = creditCardController.create(requestMock, newCreditCard);
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);

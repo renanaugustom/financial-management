@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { Request } from 'express';
 
 import { CreditCardService } from '@src/creditCard/credit-card.service';
 import { CreditCardCreateDTO } from '@src/creditCard/dtos/credit-card-create.dto';
+import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 
 @Controller('credit-card')
 export class CreditCardController {
@@ -14,7 +16,12 @@ export class CreditCardController {
     tags: ['Credit Card'],
   })
   @ApiCreatedResponse()
-  async create(@Body() newCreditCard: CreditCardCreateDTO): Promise<void> {
-    await this.creditCardService.createCreditCard(newCreditCard);
+  async create(
+    @Req() request: Request,
+    @Body() newCreditCard: CreditCardCreateDTO,
+  ): Promise<void> {
+    const user = request['user'] as UserContextDTO;
+
+    await this.creditCardService.createCreditCard(user.sub, newCreditCard);
   }
 }

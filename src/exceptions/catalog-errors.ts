@@ -44,4 +44,9 @@ export const CATALOG_ERRORS = {
     '0008',
     'Category doesn`t exists',
   ),
+  FINANCIAL_ACCOUNT_NOT_EXISTS: new APIError(
+    HttpStatus.NOT_FOUND,
+    '0009',
+    'Financial account doesn`t exists',
+  ),
 };
