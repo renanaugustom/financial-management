@@ -1,6 +1,9 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import {
+  ApiConflictResponse,
   ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -10,6 +13,10 @@ import { CreditCardService } from '@src/creditCard/credit-card.service';
 import { CreditCardCreateDTO } from '@src/creditCard/dtos/credit-card-create.dto';
 import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 import { CreditCardGetDto } from './dtos/credit-card-get.dto';
+import {
+  FinancialAccountDoesntBelongToUserDocsDTO,
+  InternalServerErrorDocsDTO,
+} from '@src/docs/dtos/docs.dto';
 
 @Controller('credit-card')
 export class CreditCardController {
@@ -20,7 +27,15 @@ export class CreditCardController {
     summary: 'Create a new credit card',
     tags: ['Credit Card'],
   })
-  @ApiCreatedResponse()
+  @ApiInternalServerErrorResponse({
+    type: InternalServerErrorDocsDTO,
+  })
+  @ApiCreatedResponse({
+    description: 'Credit card created',
+  })
+  @ApiConflictResponse({
+    type: FinancialAccountDoesntBelongToUserDocsDTO,
+  })
   async create(
     @Req() request: Request,
     @Body() newCreditCard: CreditCardCreateDTO,
@@ -35,7 +50,13 @@ export class CreditCardController {
     summary: 'Get credit cards from user',
     tags: ['Credit Card'],
   })
-  @ApiOkResponse()
+  @ApiOkResponse({
+    description: 'List all categories',
+    type: [CreditCardGetDto],
+  })
+  @ApiInternalServerErrorResponse({
+    type: InternalServerErrorDocsDTO,
+  })
   async listByUser(@Req() request: Request): Promise<CreditCardGetDto[]> {
     const user = request['user'] as UserContextDTO;
 
