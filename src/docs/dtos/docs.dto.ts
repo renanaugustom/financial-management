@@ -89,3 +89,21 @@ export class FinancialAccountDoesntBelongToUserDocsDTO {
   })
   description: string;
 }
+
+export class UserNotExistsDocsDTO {
+  @ApiProperty({
+    description: 'Error code',
+    type: String,
+    required: true,
+    example: '0007',
+  })
+  errorCode: string;
+
+  @ApiProperty({
+    description: 'Description',
+    type: String,
+    required: true,
+    example: 'User doesn`t exists',
+  })
+  description: string;
+}

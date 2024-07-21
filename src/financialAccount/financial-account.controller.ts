@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import {
   ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -11,6 +13,10 @@ import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-
 import { FinancialAccount } from '@src/financialAccount/financial-account.entity';
 import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
+import {
+  InternalServerErrorDocsDTO,
+  UserNotExistsDocsDTO,
+} from '@src/docs/dtos/docs.dto';
 
 @Controller('financial-account')
 export class FinancialAccountController {
@@ -21,7 +27,17 @@ export class FinancialAccountController {
     summary: 'Create a new financial account',
     tags: ['Financial Account'],
   })
-  @ApiCreatedResponse()
+  @ApiNotFoundResponse({
+    description: 'User not found',
+    type: UserNotExistsDocsDTO,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorDocsDTO,
+  })
+  @ApiCreatedResponse({
+    description: 'Financial account created',
+  })
   async create(
     @Body() newFinancialAccount: FinancialAccountCreateDTO,
   ): Promise<void> {
@@ -33,7 +49,11 @@ export class FinancialAccountController {
     summary: 'Get financial accounts by user ID',
     tags: ['Financial Account'],
   })
-  @ApiOkResponse({ type: [FinancialAccount] })
+  @ApiOkResponse({ type: [FinancialAccountListDTO] })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorDocsDTO,
+  })
   async listByUserId(
     @Req() request: Request,
   ): Promise<FinancialAccountListDTO[]> {
