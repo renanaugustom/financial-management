@@ -107,3 +107,21 @@ export class UserNotExistsDocsDTO {
   })
   description: string;
 }
+
+export class CategoryNotExistsDocsDTO {
+  @ApiProperty({
+    description: 'Error code',
+    type: String,
+    required: true,
+    example: '0008',
+  })
+  errorCode: string;
+
+  @ApiProperty({
+    description: 'Description',
+    type: String,
+    required: true,
+    example: 'Category doesn`t exists',
+  })
+  description: string;
+}
