@@ -18,6 +18,24 @@ export class InternalServerErrorDocsDTO {
   description: string;
 }
 
+export class EntityAlreadyExistsDocsDTO {
+  @ApiProperty({
+    description: 'Error code',
+    type: String,
+    required: true,
+    example: '0002',
+  })
+  errorCode: string;
+
+  @ApiProperty({
+    description: 'Description',
+    type: String,
+    required: true,
+    example: 'The entity already exists',
+  })
+  description: string;
+}
+
 export class CreditCardDoesntBelongToAccountDocsDTO {
   @ApiProperty({
     description: 'Error code',
@@ -36,24 +54,6 @@ export class CreditCardDoesntBelongToAccountDocsDTO {
   description: string;
 }
 
-export class FinancialAccountDoesntBelongToUserDocsDTO {
-  @ApiProperty({
-    description: 'Error code',
-    type: String,
-    required: true,
-    example: '0006',
-  })
-  errorCode: string;
-
-  @ApiProperty({
-    description: 'Description',
-    type: String,
-    required: true,
-    example: 'Financial account doesn`t belong to user',
-  })
-  description: string;
-}
-
 export class UserNotAuthorizedDocsDTO {
   @ApiProperty({
     description: 'Error code',
@@ -68,6 +68,24 @@ export class UserNotAuthorizedDocsDTO {
     type: String,
     required: true,
     example: 'Unauthorized',
+  })
+  description: string;
+}
+
+export class FinancialAccountDoesntBelongToUserDocsDTO {
+  @ApiProperty({
+    description: 'Error code',
+    type: String,
+    required: true,
+    example: '0006',
+  })
+  errorCode: string;
+
+  @ApiProperty({
+    description: 'Description',
+    type: String,
+    required: true,
+    example: 'Financial account doesn`t belong to user',
   })
   description: string;
 }
