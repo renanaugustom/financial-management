@@ -49,7 +49,7 @@ describe('AuthService', () => {
       expect(userRepositoryMock.findOneBy).toHaveBeenCalledWith({
         email: emailProvided,
       });
-      expect(result).toEqual({ access_token: 'token' });
+      expect(result).toEqual({ accessToken: 'token' });
     });
 
     it('should throw an error when the user is not found', async () => {
