@@ -6,7 +6,10 @@ import { plainToInstance } from 'class-transformer';
 import { FinancialAccount } from '@src/financialAccount/financial-account.entity';
 import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-account-create.dto';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
-import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
+import {
+  FinancialAccountDTO,
+  FinancialAccountListDTO,
+} from '@src/financialAccount/dtos/financial-account-list.dto';
 
 @Injectable()
 export class FinancialAccountService {
@@ -40,15 +43,23 @@ export class FinancialAccountService {
     }
   }
 
-  async listByUserId(userId: string): Promise<FinancialAccountListDTO[]> {
+  async listByUserId(userId: string): Promise<FinancialAccountListDTO> {
     const accountEntities = await this.accountRepository.find({
       where: { userId },
     });
 
-    return accountEntities.map((account) => {
-      return plainToInstance(FinancialAccountListDTO, account, {
-        excludeExtraneousValues: true,
-      });
-    });
+    console.log(accountEntities);
+
+    return {
+      accountsTotalBalance: accountEntities.reduce(
+        (total, account) => total + account.balance,
+        0,
+      ),
+      accounts: accountEntities.map((account) => {
+        return plainToInstance(FinancialAccountDTO, account, {
+          excludeExtraneousValues: true,
+        });
+      }),
+    } as FinancialAccountListDTO;
   }
 }

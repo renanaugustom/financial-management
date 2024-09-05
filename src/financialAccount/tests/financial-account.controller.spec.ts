@@ -5,7 +5,10 @@ import { Request } from 'express';
 import { FinancialAccountController } from '@src/financialAccount/financial-account.controller';
 import { FinancialAccountService } from '@src/financialAccount/financial-account.service';
 import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-account-create.dto';
-import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
+import {
+  FinancialAccountDTO,
+  FinancialAccountListDTO,
+} from '@src/financialAccount/dtos/financial-account-list.dto';
 
 describe('FinancialAccountController', () => {
   let financialAccountController: FinancialAccountController;
@@ -67,15 +70,20 @@ describe('FinancialAccountController', () => {
   describe('listByUserId', () => {
     it('should list financial accounts by user ID', async () => {
       // ARRANGE
-      const financialAccountResponse = [
-        {
-          id: faker.string.uuid(),
-          balance: faker.number.int({ min: 0, max: 100000 }),
-          name: faker.finance.accountName(),
-          type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
-          userId,
-        },
-      ] as FinancialAccountListDTO[];
+      const accountBalance = faker.number.int({ min: 0, max: 100000 });
+
+      const financialAccountResponse = {
+        accountsTotalBalance: accountBalance,
+        accounts: [
+          {
+            id: faker.string.uuid(),
+            balance: accountBalance,
+            name: faker.finance.accountName(),
+            type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
+            userId,
+          },
+        ] as FinancialAccountDTO[],
+      } as FinancialAccountListDTO;
 
       financialAccountServiceMock.listByUserId.mockResolvedValue(
         financialAccountResponse,

@@ -7,7 +7,10 @@ import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-
 import { faker } from '@faker-js/faker';
 import { plainToInstance } from 'class-transformer';
 import { CATALOG_ERRORS } from '@src/exceptions/catalog-errors';
-import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
+import {
+  FinancialAccountDTO,
+  FinancialAccountListDTO,
+} from '@src/financialAccount/dtos/financial-account-list.dto';
 
 describe('FinancialAccountService', () => {
   let financialAccountService: FinancialAccountService;
@@ -95,10 +98,12 @@ describe('FinancialAccountService', () => {
   describe('listByUserId', () => {
     it('should list financial accounts by user ID', async () => {
       // ARRANGE
+      const accountBalance = faker.number.int({ min: 0, max: 100000 });
+
       const financialAccountResponse = [
         {
           id: faker.string.uuid(),
-          balance: faker.number.int({ min: 0, max: 100000 }),
+          balance: accountBalance,
           name: faker.finance.accountName(),
           type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
           userId,
@@ -111,11 +116,17 @@ describe('FinancialAccountService', () => {
         financialAccountResponse,
       );
 
-      const expectedResult = financialAccountResponse.map((account) => {
-        return plainToInstance(FinancialAccountListDTO, account, {
-          excludeExtraneousValues: true,
-        });
-      });
+      const expectedResult = {
+        accountsTotalBalance: financialAccountResponse.reduce(
+          (total, account) => total + account.balance,
+          0,
+        ),
+        accounts: financialAccountResponse.map((account) => {
+          return plainToInstance(FinancialAccountDTO, account, {
+            excludeExtraneousValues: true,
+          });
+        }),
+      } as FinancialAccountListDTO;
 
       // ACT
       const result = await financialAccountService.listByUserId(userId);
@@ -127,7 +138,7 @@ describe('FinancialAccountService', () => {
       expect(result).toEqual(expectedResult);
     });
 
-    it('should return an empty array if no financial accounts are found', async () => {
+    it('should return zero balance and an empty array if no financial accounts are found', async () => {
       // ARRANGE
       financialAccountRepositoryMock.find.mockResolvedValue([]);
 
@@ -138,7 +149,11 @@ describe('FinancialAccountService', () => {
       expect(financialAccountRepositoryMock.find).toHaveBeenCalledWith({
         where: { userId },
       });
-      expect(result).toEqual([]);
+
+      expect(result).toEqual({
+        accountsTotalBalance: 0,
+        accounts: [],
+      } as FinancialAccountListDTO);
     });
 
     it('should throw exception if listByUserId fails', async () => {

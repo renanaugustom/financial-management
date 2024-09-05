@@ -61,7 +61,7 @@ export class FinancialAccountController {
   })
   async listByUserId(
     @Req() request: Request,
-  ): Promise<FinancialAccountListDTO[]> {
+  ): Promise<FinancialAccountListDTO> {
     const user = request['user'] as UserContextDTO;
 
     return this.financialAccountService.listByUserId(user.sub);
