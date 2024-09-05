@@ -28,7 +28,6 @@ describe('FinancialAccountController', () => {
     balance: faker.number.int({ min: 0, max: 100000 }),
     name: faker.finance.accountName(),
     type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
-    userId,
   };
 
   describe('create', () => {
@@ -37,11 +36,12 @@ describe('FinancialAccountController', () => {
       financialAccountServiceMock.createAccount.mockReturnThis();
 
       // ACT
-      await financialAccountController.create(newFinancialAccount);
+      await financialAccountController.create(newFinancialAccount, requestMock);
 
       // ASSERT
       expect(financialAccountServiceMock.createAccount).toHaveBeenCalledWith(
         newFinancialAccount,
+        userId,
       );
     });
 
@@ -54,7 +54,10 @@ describe('FinancialAccountController', () => {
       );
 
       // ACT
-      const promise = financialAccountController.create(newFinancialAccount);
+      const promise = financialAccountController.create(
+        newFinancialAccount,
+        requestMock,
+      );
 
       // ASSERT
       await expect(promise).rejects.toThrow(expectedError);

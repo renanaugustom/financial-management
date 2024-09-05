@@ -25,12 +25,4 @@ export class FinancialAccountCreateDTO {
     example: 1000,
   })
   balance: number;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty({
-    description: 'User ID',
-    example: 'c5e4f3d2-b1a9-4b3c-8d7e-6f5a4b3c2d1a',
-  })
-  userId: string;
 }

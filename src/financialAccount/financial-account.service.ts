@@ -15,11 +15,16 @@ export class FinancialAccountService {
     private accountRepository: Repository<FinancialAccount>,
   ) {}
 
-  async createAccount(financialAccount: FinancialAccountCreateDTO) {
+  async createAccount(
+    financialAccount: FinancialAccountCreateDTO,
+    userId: string,
+  ) {
     const financialAccountEntity = plainToInstance(
       FinancialAccount,
       financialAccount,
     );
+
+    financialAccountEntity.userId = userId;
 
     try {
       await this.accountRepository.save(financialAccountEntity);

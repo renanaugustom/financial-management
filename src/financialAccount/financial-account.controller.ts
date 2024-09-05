@@ -10,7 +10,6 @@ import { Request } from 'express';
 
 import { FinancialAccountService } from '@src/financialAccount/financial-account.service';
 import { FinancialAccountCreateDTO } from '@src/financialAccount/dtos/financial-account-create.dto';
-import { FinancialAccount } from '@src/financialAccount/financial-account.entity';
 import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 import { FinancialAccountListDTO } from '@src/financialAccount/dtos/financial-account-list.dto';
 import {
@@ -40,8 +39,14 @@ export class FinancialAccountController {
   })
   async create(
     @Body() newFinancialAccount: FinancialAccountCreateDTO,
+    @Req() request: Request,
   ): Promise<void> {
-    await this.financialAccountService.createAccount(newFinancialAccount);
+    const user = request['user'] as UserContextDTO;
+
+    await this.financialAccountService.createAccount(
+      newFinancialAccount,
+      user.sub,
+    );
   }
 
   @Get('/')

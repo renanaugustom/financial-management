@@ -25,7 +25,6 @@ describe('FinancialAccountService', () => {
     balance: faker.number.int({ min: 0, max: 100000 }),
     name: faker.finance.accountName(),
     type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
-    userId,
   };
 
   describe('createAccount', () => {
@@ -41,11 +40,15 @@ describe('FinancialAccountService', () => {
       );
 
       // ACT
-      await financialAccountService.createAccount(newFinancialAccountDto);
-
-      expect(financialAccountRepositoryMock.save).toHaveBeenCalledWith(
+      await financialAccountService.createAccount(
         newFinancialAccountDto,
+        userId,
       );
+
+      expect(financialAccountRepositoryMock.save).toHaveBeenCalledWith({
+        ...newFinancialAccountDto,
+        userId,
+      });
     });
 
     it('should throw exception if createAccount fails', async () => {
@@ -57,6 +60,7 @@ describe('FinancialAccountService', () => {
       // ACT
       const promise = financialAccountService.createAccount(
         newFinancialAccountDto,
+        userId,
       );
 
       // ASSERT
@@ -79,6 +83,7 @@ describe('FinancialAccountService', () => {
       // ACT
       const promise = financialAccountService.createAccount(
         newFinancialAccountDto,
+        userId,
       );
 
       // ASSERT
