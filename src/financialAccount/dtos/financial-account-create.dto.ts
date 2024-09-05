@@ -21,8 +21,8 @@ export class FinancialAccountCreateDTO {
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({
-    description: 'Balance of the financial account',
+    description: 'Initial balance of the financial account',
     example: 1000,
   })
-  balance: number;
+  initialBalance: number;
 }

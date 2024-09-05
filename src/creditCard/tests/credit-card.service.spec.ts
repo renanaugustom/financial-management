@@ -48,6 +48,7 @@ describe('CreditCardService', () => {
 
   const financialAccountEntity: FinancialAccount = {
     balance: faker.number.int({ min: 0, max: 100000 }),
+    initialBalance: faker.number.int({ min: 0, max: 100000 }),
     id: faker.string.uuid(),
     name: faker.finance.accountName(),
     type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),

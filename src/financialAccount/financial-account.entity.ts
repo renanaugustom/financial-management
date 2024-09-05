@@ -26,6 +26,9 @@ export class FinancialAccount {
   @Column({ default: 0, nullable: false })
   balance: number;
 
+  @Column({ name: 'initial_balance', default: 0, nullable: false })
+  initialBalance: number;
+
   @Column({ name: 'user_id', nullable: false })
   userId: string;
 

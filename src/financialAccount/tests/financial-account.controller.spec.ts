@@ -25,7 +25,7 @@ describe('FinancialAccountController', () => {
   });
 
   const newFinancialAccount: FinancialAccountCreateDTO = {
-    balance: faker.number.int({ min: 0, max: 100000 }),
+    initialBalance: faker.number.int({ min: 0, max: 100000 }),
     name: faker.finance.accountName(),
     type: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
   };

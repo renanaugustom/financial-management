@@ -25,6 +25,7 @@ export class FinancialAccountService {
     );
 
     financialAccountEntity.userId = userId;
+    financialAccountEntity.balance = financialAccount.initialBalance;
 
     try {
       await this.accountRepository.save(financialAccountEntity);
