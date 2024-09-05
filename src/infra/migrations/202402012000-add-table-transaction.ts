@@ -19,6 +19,11 @@ export class AddTableTransaction1706904237000 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'description',
+            type: 'varchar',
+            isNullable: false,
+          },
+          {
             name: 'value',
             type: 'int',
             isNullable: false,

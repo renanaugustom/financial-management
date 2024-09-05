@@ -22,9 +22,17 @@ export class TransactionListDTO {
   @ApiProperty({
     type: String,
     description: 'Transaction Type',
-    example: 'INCOME',
+    example: 'CREDIT',
   })
   type: string;
+
+  @Expose()
+  @ApiProperty({
+    type: String,
+    description: 'Transaction Description',
+    example: 'Salary',
+  })
+  description: string;
 
   @Expose()
   @Transform((value) => {

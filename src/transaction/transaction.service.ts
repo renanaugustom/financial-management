@@ -69,6 +69,9 @@ export class TransactionService {
         categoryId: filter.categoryId,
         date: filterDate,
       },
+      order: {
+        date: 'DESC',
+      },
     });
 
     return transactionsByUser.map((transaction) => {
@@ -85,6 +88,7 @@ export class TransactionService {
     const transactions = await this.transactionRepository.find({
       relations: {
         financialAccount: true,
+        category: true,
       },
       where: {
         financialAccount: {

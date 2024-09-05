@@ -2,8 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsEmpty, IsString } from 'class-validator';
 
 export class TransactionFilterDTO {
-
-  
   @IsEmpty()
   @IsDate()
   @ApiProperty({
@@ -45,7 +43,7 @@ export class TransactionFilterDTO {
   @ApiProperty({
     required: false,
     description: 'Type of transaction',
-    example: 'INCOME',
+    example: 'CREDIT',
   })
   public type?: string;
 }

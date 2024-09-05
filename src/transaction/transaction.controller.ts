@@ -16,7 +16,6 @@ import { UserContextDTO } from '@src/auth/dtos/user-contexto.dto';
 import { Request } from 'express';
 import {
   CategoryNotExistsDocsDTO,
-  CreditCardDoesntBelongToAccountDocsDTO,
   FinancialAccountDoesntBelongToUserDocsDTO,
   InternalServerErrorDocsDTO,
 } from '@src/docs/dtos/docs.dto';

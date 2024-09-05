@@ -12,7 +12,7 @@ export class TransactionCreateDTO {
   @IsString()
   @ApiProperty({
     description: 'Transaction type',
-    example: 'CREDIT',
+    example: 'DEBIT',
   })
   type: string;
 
@@ -23,6 +23,14 @@ export class TransactionCreateDTO {
     example: 100,
   })
   value: number;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'Transaction description',
+    example: 'Remedy',
+  })
+  description: string;
 
   @IsNotEmpty()
   @IsDateString()

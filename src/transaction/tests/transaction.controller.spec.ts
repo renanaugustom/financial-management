@@ -22,9 +22,10 @@ describe('TransactionController', () => {
 
   const newTransactionDTO: TransactionCreateDTO = {
     categoryId: faker.string.uuid(),
+    description: faker.string.sample(),
     date: new Date(),
     financialAccountId: faker.string.uuid(),
-    type: faker.helpers.arrayElement(['INCOME', 'OUTCOME']),
+    type: faker.helpers.arrayElement(['CREDIT', 'DEBIT']),
     value: faker.number.int({ min: 0, max: 100000 }),
     creditCardId: faker.string.uuid(),
   };
@@ -34,7 +35,7 @@ describe('TransactionController', () => {
     startDate: new Date(),
     endDate: new Date(),
     financialAccountId: faker.string.uuid(),
-    type: faker.helpers.arrayElement(['INCOME', 'OUTCOME']),
+    type: faker.helpers.arrayElement(['CREDIT', 'DEBIT']),
   };
 
   const creditCardId = faker.string.uuid();
@@ -89,6 +90,7 @@ describe('TransactionController', () => {
           value: faker.number.int({ min: 0, max: 100000 }),
           type: transactionGetDTO.type,
           financialAccountName: faker.finance.accountName(),
+          description: faker.string.sample(),
         },
       ];
 
@@ -151,10 +153,11 @@ describe('TransactionController', () => {
         {
           categoryId: faker.string.uuid(),
           date: new Date(),
+          description: faker.string.sample(),
           financialAccountId: faker.string.uuid(),
           categoryName: faker.string.sample(),
           value: faker.number.int({ min: 0, max: 100000 }),
-          type: faker.helpers.arrayElement(['INCOME', 'OUTCOME']),
+          type: faker.helpers.arrayElement(['CREDIT', 'DEBIT']),
           financialAccountName: faker.finance.accountName(),
         },
       ];

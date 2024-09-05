@@ -40,6 +40,7 @@ describe('TransactionService', () => {
     paymentDay: faker.number.int({ min: 1, max: 31 }),
     createdAt: new Date(),
     updatedAt: new Date(),
+    expirationDate: '20/30',
     financialAccount: {
       userId,
     } as FinancialAccount,
@@ -49,8 +50,9 @@ describe('TransactionService', () => {
   const newTransactionDTO: TransactionCreateDTO = {
     categoryId: faker.string.uuid(),
     date: new Date(),
+    description: faker.string.sample(),
     financialAccountId: creditCard.financialAccountId,
-    type: faker.helpers.arrayElement(['INCOME', 'OUTCOME']),
+    type: faker.helpers.arrayElement(['CREDIT', 'DEBIT']),
     value: faker.number.int({ min: 0, max: 100000 }),
     creditCardId: creditCard.id,
   };
@@ -58,6 +60,7 @@ describe('TransactionService', () => {
   const newTransactionEntity: Transaction = {
     categoryId: newTransactionDTO.categoryId,
     date: newTransactionDTO.date,
+    description: newTransactionDTO.description,
     financialAccountId: newTransactionDTO.financialAccountId,
     type: newTransactionDTO.type,
     value: newTransactionDTO.value,
@@ -246,7 +249,7 @@ describe('TransactionService', () => {
       const ormUtils = new ORMUtils();
 
       const filter: TransactionFilterDTO = {
-        type: 'INCOME',
+        type: 'CREDIT',
         financialAccountId: faker.string.uuid(),
         categoryId: faker.string.uuid(),
         endDate: new Date('2023-04-02T12:00:00'),
@@ -256,6 +259,7 @@ describe('TransactionService', () => {
         {
           categoryId: filter.categoryId,
           date: new Date(),
+          description: faker.string.sample(),
           financialAccountId: filter.financialAccountId,
           type: filter.type,
           value: faker.number.int({ min: 0, max: 100000 }),
@@ -270,6 +274,7 @@ describe('TransactionService', () => {
         {
           categoryId: filter.categoryId,
           date: new Date(),
+          description: faker.string.sample(),
           financialAccountId: filter.financialAccountId,
           type: filter.type,
           value: faker.number.int({ min: 0, max: 100000 }),
@@ -301,6 +306,9 @@ describe('TransactionService', () => {
         relations: {
           financialAccount: true,
           category: true,
+        },
+        order: {
+          date: 'DESC',
         },
         where: {
           financialAccount: {
@@ -342,8 +350,9 @@ describe('TransactionService', () => {
         {
           categoryId: faker.string.uuid(),
           date: new Date(),
+          description: faker.string.sample(),
           financialAccountId: faker.string.uuid(),
-          type: faker.helpers.arrayElement(['INCOME', 'OUTCOME']),
+          type: faker.helpers.arrayElement(['CREDIT', 'DEBIT']),
           value: faker.number.int({ min: 0, max: 100000 }),
           creditCardId,
           createdAt: new Date(),
@@ -356,8 +365,9 @@ describe('TransactionService', () => {
         {
           categoryId: faker.string.uuid(),
           date: new Date(),
+          description: faker.string.sample(),
           financialAccountId: faker.string.uuid(),
-          type: faker.helpers.arrayElement(['INCOME', 'OUTCOME']),
+          type: faker.helpers.arrayElement(['CREDIT', 'DEBIT']),
           value: faker.number.int({ min: 0, max: 100000 }),
           creditCardId,
           createdAt: new Date(),
@@ -389,6 +399,7 @@ describe('TransactionService', () => {
       expect(transactionRepositoryMock.find).toHaveBeenCalledWith({
         relations: {
           financialAccount: true,
+          category: true,
         },
         where: {
           financialAccount: {
