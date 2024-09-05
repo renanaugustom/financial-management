@@ -22,6 +22,7 @@ describe('CreditCardController', () => {
     limit: faker.number.int({ min: 0, max: 100000 }),
     invoiceDay: faker.number.int({ min: 1, max: 31 }),
     paymentDay: faker.number.int({ min: 1, max: 31 }),
+    expirationDate: '20/30',
     financialAccountId: faker.string.uuid(),
   };
 

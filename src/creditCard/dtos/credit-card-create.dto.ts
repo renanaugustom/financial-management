@@ -31,4 +31,9 @@ export class CreditCardCreateDTO {
   @IsNotEmpty()
   @IsNumber()
   paymentDay: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  expirationDate: string;
 }

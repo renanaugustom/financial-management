@@ -32,6 +32,7 @@ describe('CreditCardService', () => {
     invoiceDay: faker.number.int({ min: 1, max: 31 }),
     paymentDay: faker.number.int({ min: 1, max: 31 }),
     financialAccountId: faker.string.uuid(),
+    expirationDate: '20/30',
   };
 
   const userEntity: User = {

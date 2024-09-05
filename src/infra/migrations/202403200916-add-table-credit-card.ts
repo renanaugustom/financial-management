@@ -44,6 +44,11 @@ export class AddTableCreditCard1710937070000 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'expiration_date',
+            type: 'varchar',
+            isNullable: false,
+          },
+          {
             name: 'created_at',
             type: 'timestamp',
             default: 'now()',

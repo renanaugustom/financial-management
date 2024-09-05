@@ -34,6 +34,9 @@ export class CreditCard {
   @Column({ name: 'payment_day', nullable: false })
   paymentDay: number;
 
+  @Column({ name: 'expiration_date', nullable: false })
+  expirationDate: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

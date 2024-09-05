@@ -64,4 +64,13 @@ export class CreditCardGetDto {
     example: 12,
   })
   paymentDay: number;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Expiration date',
+    type: String,
+    required: true,
+    example: '10/23',
+  })
+  expirationDate: string;
 }
