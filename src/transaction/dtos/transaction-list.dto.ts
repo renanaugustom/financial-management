@@ -36,8 +36,8 @@ export class TransactionListDTO {
 
   @Expose()
   @Transform((value) => {
-    if (value.obj['account']) {
-      return value.obj['account']['id'];
+    if (value.obj['financialAccount']) {
+      return value.obj['financialAccount']['id'];
     }
   })
   @ApiProperty({
@@ -49,8 +49,8 @@ export class TransactionListDTO {
 
   @Expose()
   @Transform((value) => {
-    if (value.obj['account']) {
-      return value.obj['account']['name'];
+    if (value.obj['financialAccount']) {
+      return value.obj['financialAccount']['name'];
     }
   })
   @ApiProperty({

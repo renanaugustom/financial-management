@@ -48,8 +48,6 @@ export class FinancialAccountService {
       where: { userId },
     });
 
-    console.log(accountEntities);
-
     return {
       accountsTotalBalance: accountEntities.reduce(
         (total, account) => total + account.balance,
